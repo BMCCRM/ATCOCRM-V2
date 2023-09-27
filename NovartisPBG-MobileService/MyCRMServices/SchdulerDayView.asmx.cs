@@ -2565,9 +2565,10 @@ namespace MyCRMServices
             string DCRReports = "";
 
             DateTime date = DateTime.Now;
+            List<object> consolidatedData = new List<object>();
 
 
-            for (int i = 0; i < 12; i++)
+            for (int i = 0; i < 13; i++)
             {
 
                 try
@@ -2579,7 +2580,22 @@ namespace MyCRMServices
                     DataSet dcrData = _dl.GetData("sp_GetDashboardChartsFORYEAR", _nv);
                     if(dcrData.Tables[0].Rows.Count > 0)
                     {
-                        DCRReports += dcrData.Tables[0].ToJsonString();
+                        // DCRReports += dcrData.Tables[0].ToJsonString();
+
+
+                        foreach (DataRow row in dcrData.Tables[0].Rows)
+                        {
+                            Dictionary<string, object> dataItem = new Dictionary<string, object>();
+
+                            // Iterate through the columns and add them to the dictionary
+                            foreach (DataColumn col in dcrData.Tables[0].Columns)
+                            {
+                                dataItem[col.ColumnName] = row[col].ToString();
+                            }
+
+                            consolidatedData.Add(dataItem);
+                        }
+
 
                     }
 
@@ -2593,9 +2609,12 @@ namespace MyCRMServices
 
             }
 
+            string consolidatedDataJson = Newtonsoft.Json.JsonConvert.SerializeObject(consolidatedData);
 
-            
-            return DCRReports;
+
+            return consolidatedDataJson;
+
+
         }
 
         /*

@@ -1495,6 +1495,7 @@ namespace PocketDCR2.Form
                             }
                             catch (Exception ex)
                             {
+                                InsertLog("ApproveThis", ex.Message.ToString());
                                 ErrorLog("Code failed in SendMail of ApproveThis Method. (" + ex.Message + ")");
                                 throw ex;
                             }
@@ -1671,6 +1672,7 @@ namespace PocketDCR2.Form
                             }
                             catch (Exception ex)
                             {
+                                InsertLog("DoctorRemoveApproveThis", ex.Message.ToString());
                                 ErrorLog("Code failed in SendMail of DoctorRemoveApproveThis Method. " + ex.Message + ")");
                                 throw ex;
                             }
@@ -2773,6 +2775,7 @@ namespace PocketDCR2.Form
                             }
                             catch (Exception ex)
                             {
+                                InsertLog("UpdateDoctorDistributorApproveThis", ex.Message.ToString());
                                 ErrorLog("Error occured in DoctorService.asmx/UpdateDoctorDistributorApproveThis : " + ex.Message);
                                 Logger.LogWriter.Log.Logging(new Exception("Error occured in DoctorService.asmx/UpdateDoctorDistributorApproveThis : " + ex.Message));
                                 throw ex;
@@ -3075,6 +3078,7 @@ namespace PocketDCR2.Form
             }
             catch (Exception ex)
             {
+                InsertLog("SendMail", ex.Message.ToString());
                 ErrorLog("EMAIL FAILURE :: Doctors Add To List Proccessing ::: Failure While Sending Email To " + ToAddress + ". Excel Sheet URL Is:" + excelUrl);
                 ErrorLog("STACKTRACE :: " + ex.StackTrace);
                 EmailLogStatus(msg, fromAddress, ToAddress, SMEmployeeid, AddtoList, DrRemId, DrBrickUpdateId, NewDrLocID, ex.Message);
@@ -3108,9 +3112,36 @@ namespace PocketDCR2.Form
             catch(Exception ex)
             {
                 ErrorLog("Error occured in DoctorService.asmx/EmailLogStatus : " + ex.Message);
+                InsertLog("EmailLogStatus", ex.Message.ToString());
+
                 Logger.LogWriter.Log.Logging(new Exception("Error occured in DoctorService.asmx/EmailLogStatus : " + ex.Message));
 
             }
+        }
+
+
+
+
+        public void InsertLog(string MethodName,string ExceptionMessage)
+        {
+
+            NameValueCollection _nvCollection = new NameValueCollection();
+            try
+            {
+                _nvCollection.Add("@MethodName-nvarchar(max)", MethodName.ToString());
+                _nvCollection.Add("@ExceptionMessage-nvarchar(max)", ExceptionMessage.ToString());
+                DataSet ds = GetData("sp_InsertLog", _nvCollection);
+
+            }
+            catch(Exception ex)
+            {
+
+                ErrorLog("Error occured in DoctorService.asmx/InsertLog : " + ex.Message);
+                Logger.LogWriter.Log.Logging(new Exception("Error occured in DoctorService.asmx/InsertLog : " + ex.Message));
+
+            }
+
+
         }
 
         private static void ErrorLog(string error)
@@ -3124,16 +3155,18 @@ namespace PocketDCR2.Form
 
                 //File.AppendAllText(ConfigurationManager.AppSettings[@"Logs\"].ToString() + "Log_MonthlyDoctorsProccessing" + DateTime.UtcNow.ToString("yyyy_MM_dd") + ".txt", DateTime.Now + " : " + error + Environment.NewLine);
 
-                if (!Directory.Exists(ConfigurationManager.AppSettings["Logs"].ToString()))
+                if (!Directory.Exists(ConfigurationManager.AppSettings["ApproveLog"].ToString()))
                 {
-                    Directory.CreateDirectory(ConfigurationManager.AppSettings["Logs"].ToString());
+                    Directory.CreateDirectory(ConfigurationManager.AppSettings["ApproveLog"].ToString());
                 }
 
-                File.AppendAllText(ConfigurationManager.AppSettings[@"Logs\"].ToString() + "LogMonthlyDoctorsProccessing_" + DateTime.UtcNow.ToString("yyyy_MM_dd") + ".txt",
+                File.AppendAllText(ConfigurationManager.AppSettings[@"ApproveLog"].ToString() + "LogMonthlyDoctorsProccessing_" + DateTime.UtcNow.ToString("yyyy_MM_dd") + ".txt",
                     DateTime.Now + " : " + error + Environment.NewLine);
             }
             catch (Exception exception)
             {
+                DoctorsService logger = new DoctorsService();
+                logger.InsertLog("ErrorLog", exception.Message.ToString());
                 Console.Out.WriteLine(exception.Message);
             }
         }
