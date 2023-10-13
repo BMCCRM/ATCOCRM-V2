@@ -1483,20 +1483,22 @@ namespace PocketDCR2.Form
                         msg = "Addition of Doctors  from Master list";
                         foreach (String emailAddress in emailAddresses.Split(';'))
                         {
+                            string paramssting = "";
                             try
                             {
                                 
-                                    ErrorLog("Code will enter in SendMail pf ApproveThis Method");
+                                    ErrorLog("Code will enter in SendUserMail of ApproveThis Method");
                                 
                              
-
-                                SendMail("SFE Approval Request", emailAddress, empid, id, "0", "0", "0", "excelURL", EmployeeName, SpoNamewithTerritory, BUH, ManagerName, msg);
+                                 paramssting = "SFE Approval Request, " + "email " + emailAddress + ", empid " +  empid + " , id " + id + ",0" + ",0" + ",0" + ",excelURL , employeename " + EmployeeName + " , SpoNamewithTerritory " +  SpoNamewithTerritory + ",BUH " + BUH + " , ManagerName " + ManagerName + " , msg" + msg;
+                                InsertLog("paramssting", paramssting);
+                                SendUserMail("SFE Approval Request", emailAddress, empid, id, "0", "0", "0", "excelURL", EmployeeName, SpoNamewithTerritory, BUH, ManagerName, msg);
                                 //PocketDCR2.Classes.Constants.ErrorLog("SUCCESS :: Doctors Add To List Proccessed And Email Send " + emailAddresses + ". Emailed Sheet Is:" + "excelURL");
                             }
                             catch (Exception ex)
                             {
                                 InsertLog("ApproveThis", ex.Message.ToString());
-                                ErrorLog("Code failed in SendMail of ApproveThis Method. (" + ex.Message + ")");
+                                ErrorLog("Code failed in SendUserMail of ApproveThis Method. (" + ex.Message + ") " + paramssting);
                                 throw ex;
                             }
                         }
@@ -1664,16 +1666,21 @@ namespace PocketDCR2.Form
                         msg = "Deletion of Doctors from list";
                         foreach (String emailAddress in emailAddresses.Split(';'))
                         {
+                            string paramssting = string.Empty;
                             try
                             {
-                                ErrorLog("Code will enter in SendMail of DoctorRemoveApproveThis Method");
-                                SendMail("SFE Approval Request", emailAddress, empid, "0", id, "0", "0", "excelURL", EmployeeName, SpoNamewithTerritory, BUH, ManagerName, msg);
+
+                                paramssting = "SFE Approval Request, " + "email " + emailAddress + ", empid " + empid + " , id " + id + ",0" + ",0" + ",0" + ",excelURL , employeename " + EmployeeName + " , SpoNamewithTerritory " + SpoNamewithTerritory + ",BUH " + BUH + " , ManagerName " + ManagerName + " , msg" + msg;
+                                InsertLog("paramssting", paramssting);
+
+                                ErrorLog("Code will enter in SendUserMail of DoctorRemoveApproveThis Method");
+                                SendUserMail("SFE Approval Request", emailAddress, empid, "0", id, "0", "0", "excelURL", EmployeeName, SpoNamewithTerritory, BUH, ManagerName, msg);
                                 PocketDCR2.Classes.Constants.ErrorLog("SUCCESS :: Doctors Add To List Proccessed And Email Send " + emailAddresses + "");
                             }
                             catch (Exception ex)
                             {
                                 InsertLog("DoctorRemoveApproveThis", ex.Message.ToString());
-                                ErrorLog("Code failed in SendMail of DoctorRemoveApproveThis Method. " + ex.Message + ")");
+                                ErrorLog("Code failed in SendUserMail of DoctorRemoveApproveThis Method. " + ex.Message + ")" + paramssting);
                                 throw ex;
                             }
                         }
@@ -2743,7 +2750,7 @@ namespace PocketDCR2.Form
                 //        {
                 //            try
                 //            {
-                //                SendMail("Doctors Add To List Sheet, Please Review", emailAddress, empid, id, "0", "0", "0", "excelURL", EmployeeName, SpoNamewithTerritory, BUH, ManagerName, msg);
+                //                SendUserMail("Doctors Add To List Sheet, Please Review", emailAddress, empid, id, "0", "0", "0", "excelURL", EmployeeName, SpoNamewithTerritory, BUH, ManagerName, msg);
                 //                //PocketDCR2.Classes.Constants.ErrorLog("SUCCESS :: Doctors Add To List Proccessed And Email Send " + emailAddresses + ". Emailed Sheet Is:" + "excelURL");
                 //            }
                 //            catch (Exception ex)
@@ -2764,19 +2771,22 @@ namespace PocketDCR2.Form
                         string msg1 = "Addition of New doctors";
                         foreach (String emailAddress in emailAddresses.Split(';'))
                         {
+                            string paramssting = string.Empty;
                             try
                             {
-                                ErrorLog("Code will enter SendMail of UpdateDoctorDistributorApproveThis Method");
-                              
+                                ErrorLog("Code will enter SendUserMail of UpdateDoctorDistributorApproveThis Method");
 
 
-                                SendMail("Update Doctor Distributor Sheet, Please Review", emailAddress, empid, "0", "0", id, "0", excelURL, null, null, null, null, msg1);
+                                paramssting = "SFE Approval Request, " + "email " + emailAddress + ", empid " + empid + " , id " + id + ",0" + ",0" + ",0" + ",excelURL: " +   excelURL+" , employeename " + EmployeeName + " , SpoNamewithTerritory " + SpoNamewithTerritory + ",BUH " + BUH + " , ManagerName " + ManagerName + " , msg" + msg;
+                                InsertLog("paramssting", paramssting);
+
+                                SendUserMail("Update Doctor Distributor Sheet, Please Review", emailAddress, empid, "0", "0", id, "0", excelURL, null, null, null, null, msg1);
                                 PocketDCR2.Classes.Constants.ErrorLog("SUCCESS :: Update Doctor Distributor Proccessed And Email Send " + emailAddresses + ". Emailed Sheet Is:" + excelURL);
                             }
                             catch (Exception ex)
                             {
                                 InsertLog("UpdateDoctorDistributorApproveThis", ex.Message.ToString());
-                                ErrorLog("Error occured in DoctorService.asmx/UpdateDoctorDistributorApproveThis : " + ex.Message);
+                                ErrorLog("Error occured in DoctorService.asmx/UpdateDoctorDistributorApproveThis : " + ex.Message + paramssting);
                                 Logger.LogWriter.Log.Logging(new Exception("Error occured in DoctorService.asmx/UpdateDoctorDistributorApproveThis : " + ex.Message));
                                 throw ex;
                             }
@@ -2916,7 +2926,7 @@ namespace PocketDCR2.Form
                 _nvCollection.Add("@Level5id-INT", Level5Id.ToString());
                 _nvCollection.Add("@Level6id-INT", Level6Id.ToString());
                 _nvCollection.Add("@CurrentUserEmployeeId-INT", _currentUser.EmployeeId.ToString());
-            //    _nvCollection.Add("@TeamID-INT", TeamID.ToString());
+                _nvCollection.Add("@TeamID-INT", TeamID.ToString());
                 _nvCollection.Add("@Userrole-varchar(50)", Role.ToString());
                 DataSet ds = GetData("sp_DoctorDetailSelect_level6_WithoutNewRequestBrickAndDistributors", _nvCollection);
 
@@ -3040,7 +3050,7 @@ namespace PocketDCR2.Form
 
             try
             {
-                ErrorLog("Code Reached to SendMail Method");
+                ErrorLog("Code Reached to SendUserMail Method");
                
                 
 
@@ -3078,7 +3088,7 @@ namespace PocketDCR2.Form
             }
             catch (Exception ex)
             {
-                InsertLog("SendMail", ex.Message.ToString());
+                InsertLog("SendUserMail", ex.Message.ToString());
                 ErrorLog("EMAIL FAILURE :: Doctors Add To List Proccessing ::: Failure While Sending Email To " + ToAddress + ". Excel Sheet URL Is:" + excelUrl);
                 ErrorLog("STACKTRACE :: " + ex.StackTrace);
                 EmailLogStatus(msg, fromAddress, ToAddress, SMEmployeeid, AddtoList, DrRemId, DrBrickUpdateId, NewDrLocID, ex.Message);
@@ -3087,6 +3097,75 @@ namespace PocketDCR2.Form
                 //ClientScript.RegisterStartupScript(GetType(), "alert", "alert('" + ex.ToString() + "');", true);
             }
         }
+
+
+
+
+        public void SendUserMail(string FormName, string ToAddress, string SMEmployeeid, string AddtoList, string DrRemId, string DrBrickUpdateId, string NewDrLocID, string excelUrl, string EmployeeName, string SpoNamewithTerritory, string BUH, string ManagerName, string msg)
+        {
+
+            string fromaddressnew = ConfigurationManager.AppSettings["AutoEmailID"].ToString();
+            MailMessage mail = new MailMessage();
+            mail.Subject = FormName;
+            mail.From = new MailAddress(fromaddressnew);
+         //   mail.To.Add(ToAddress);
+            mail.To.Add(new MailAddress(ToAddress));
+         //   mail.CC.Add(new MailAddress(CCAddress));
+         //   mail.CC.Add(CCAddress);
+
+            try
+            {
+                ErrorLog("Code Reached to SendUserMail Method");
+
+
+
+
+                mail.Body = @"<html><head><title></title></head><body><div style = 'border-top:3px solid #2484C6'>&nbsp;</div>
+                <span style = 'font-family:Arial;font-size:10pt'>
+                Dear Mr." + BUH + ".<br/><br/>" +
+                "You have received SFE approval request.<br/><br/>" +
+                "<b>From&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: </b>" + ManagerName + "<br/>" +
+                "<b>For&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: </b>" + msg + " <br/>" +
+                "<b>Generated by &nbsp;: </b>" + SpoNamewithTerritory + "<br/>" +
+                "<br/>" +
+                "<b>Link : </b><a href='https://bmc.atcolab.com/AtcoCRM/Form/Login.aspx'>Web Portal URL</a>" +
+                "</body></html>";
+
+                mail.IsBodyHtml = true;
+
+                AlternateView avHtml = AlternateView.CreateAlternateViewFromString(mail.Body, Encoding.Default, MediaTypeNames.Text.Html);
+                //string path = System.AppDomain.CurrentDomain.BaseDirectory + "/Images/Bmclogo.png";
+                ////System.Web.HttpContext.Current.Server.MapPath("~/Images/Bmclogo.png");
+                //LinkedResource header = new LinkedResource(path, MediaTypeNames.Image.Jpeg);
+                //header.ContentId = "Footer";
+                //avHtml.LinkedResources.Add(header)
+                //System.Net.Mail.Attachment attachment;
+                //attachment = new System.Net.Mail.Attachment(excelUrl);
+                //mail.Attachments.Add(attachment);
+
+                mail.AlternateViews.Add(avHtml);
+                SmtpClient smtp = new SmtpClient(smtphost, Convert.ToInt32(smtpPort));
+                smtp.EnableSsl = smtpSSL;
+                NetworkCredential netCre = new NetworkCredential(fromaddressnew, smtppassword);
+                smtp.Credentials = netCre;
+                smtp.Send(mail);
+                EmailLogStatus(msg, fromaddressnew, ToAddress, SMEmployeeid, AddtoList, DrRemId, DrBrickUpdateId, NewDrLocID, "Processed");
+            }
+            catch (Exception ex)
+            {
+                InsertLog("SendUserMail", ex.Message.ToString());
+                ErrorLog("EMAIL FAILURE :: Doctors Add To List Proccessing ::: Failure While Sending Email To " + ToAddress + ". Excel Sheet URL Is:" + excelUrl);
+                ErrorLog("STACKTRACE :: " + ex.StackTrace);
+                EmailLogStatus(msg, fromaddressnew, ToAddress, SMEmployeeid, AddtoList, DrRemId, DrBrickUpdateId, NewDrLocID, ex.Message);
+                throw ex;
+
+                //ClientScript.RegisterStartupScript(GetType(), "alert", "alert('" + ex.ToString() + "');", true);
+            }
+        }
+
+
+
+
 
         public void EmailLogStatus(string FormName, string fromAddress, string ToAddress, string SMEmployeeid, string AddtoList, string DrRemId, string DrBrickUpdateId, string NewDrLocID, string status)
         {

@@ -3,7 +3,9 @@ using PocketDCR2.Classes;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Script.Serialization;
@@ -69,6 +71,29 @@ namespace PocketDCR2.Form
             return result;
         }
 
+
+        public void InsertLog(string MethodName, string ExceptionMessage)
+        {
+
+            NameValueCollection _nvCollection = new NameValueCollection();
+            try
+            {
+                _nvCollection.Add("@MethodName-nvarchar(max)", MethodName.ToString());
+                _nvCollection.Add("@ExceptionMessage-nvarchar(max)", ExceptionMessage.ToString());
+                DataSet ds = dl.GetData("sp_InsertLog", _nvCollection);
+
+            }
+            catch (Exception ex)
+            {
+
+                ErrorLog("Error occured in DoctorService.asmx/InsertLog : " + ex.Message);
+                Logger.LogWriter.Log.Logging(new Exception("Error occured in DoctorService.asmx/InsertLog : " + ex.Message));
+
+            }
+
+
+        }
+
         [WebMethod(EnableSession = true)]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public string ApproveOrReject(string status, string role, string empId, string docid, string comments)
@@ -104,9 +129,9 @@ namespace PocketDCR2.Form
                         level6id = (Convert.ToInt32(getEmployeeHierarchy.Tables[0].Rows[0]["LevelId6"]) < 0) ? 0 : Convert.ToInt32(getEmployeeHierarchy.Tables[0].Rows[0]["LevelId6"]);
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-
+                    InsertLog("ApproveOrReject", ex.Message.ToString());
                     throw;
                 }
 
@@ -137,13 +162,23 @@ namespace PocketDCR2.Form
 
                                 foreach (String emailAddress in emailAddresses.Split(';'))
                                 {
+                                    string paramssting = "";
                                     try
                                     {
-                                        Email.SendMail("SFE Approval Request", emailAddress, empId, "0", "0", "0", docid, "Processed", EmployeeName, SpoNamewithTerritory, BUH, ManagerName, msg);
+                                        ErrorLog("Code will enter in SendMail of NewDoctorRequestService/ApproveOrReject Method");
+
+
+                                        paramssting = "SFE Approval Request, " + "email " + emailAddress + ", empid " + empId +  ",0" + ",0" + ",0" + docid + ",Processed , employeename " + EmployeeName + " , SpoNamewithTerritory " + SpoNamewithTerritory + ",BUH " + BUH + " , ManagerName " + ManagerName + " , msg" + msg;
+                                        InsertLog("paramssting", paramssting);
+
+
+                                        Email.SendUserMail("SFE Approval Request", emailAddress, empId, "0", "0", "0", docid, "Processed", EmployeeName, SpoNamewithTerritory, BUH, ManagerName, msg);
                                         PocketDCR2.Classes.Constants.ErrorLog("SUCCESS :: New Doctor Request For Mobile Proccessed And Email Send " + emailAddresses + "");
                                     }
                                     catch (Exception ex)
                                     {
+                                        ErrorLog("Code Failed in NewDoctorRequestService/ApproveOrReject Method. (" + ex.Message + " )" + paramssting);
+
                                         retrunstr = result.Tables[0].ToJsonString();
                                         //throw ex;
                                     }
@@ -169,67 +204,45 @@ namespace PocketDCR2.Form
             }
 
 
-                //switch (role)
-            //{
-            //    case "rl5":
-            //        DataSet ds = new DataSet();
-            //        for (int a = 0; a <= empId.Split(',').Length - 1; a++)
-            //        {
-            //            nv.Clear();
-            //            nv.Add("@status-int", status.ToString());
-            //            nv.Add("@empId-int", empId.Split(',')[a].ToString());
-            //            nv.Add("@docid-int", docid.Split(',')[a].ToString());
-            //            nv.Add("@role-nvarchar(50)", role.ToString());
-            //            nv.Add("@comments-nvarchar(255)", comments.ToString());
-
-                //            ds = dl.GetData("sp_ApproveOrRejectDocRequest", nv);
-            //            if (ds.Tables[0].Rows.Count > 0)
-            //                countSuccess++;
-            //        }
-            //        ds.Tables[0].Rows[0][0] += "-" + countSuccess.ToString();
-
-                //        retrunstr = ds.Tables[0].ToJsonString();
-            //        break;
-
-
-
-
-
-                //    case "admin":
-            //        DataSet dsadmin = new DataSet();
-            //        for (int a = 0; a <= empId.Split(',').Length - 1; a++)
-            //        {
-
-                //            nv.Clear();
-            //            nv.Add("@status-int", status.ToString());
-            //            nv.Add("@empId-int", empId.Split(',')[a].ToString());
-            //            nv.Add("@docid-int", docid.Split(',')[a].ToString());
-            //            nv.Add("@role-nvarchar(50)", role.ToString());
-            //            nv.Add("@comments-nvarchar(255)", comments.ToString());
-
-                //            dsadmin = dl.GetData("sp_ApproveOrRejectDocRequest", nv);
-            //            if (dsadmin.Tables[0].Rows.Count > 0)
-            //                countSuccess++;
-
-                //        }
-            //        dsadmin.Tables[0].Rows[0][0] += "-" + countSuccess.ToString();
-            //        retrunstr = dsadmin.Tables[0].ToJsonString();
-            //        break;
-
-                //    default:
-            //        break;
-            //}
-
-
                 #endregion
 
             catch (Exception exception)
             {
-                Logger.LogWriter.Log.Logging(new Exception("Error occured in NewDoctorRequestService.asmx/ApproveOrRejectAll : " + exception.Message));
+                ErrorLog("Code Failed in NewDoctorRequestService/ApproveOrReject Method. (" + exception.Message + " )");
+                InsertLog("ApproveOrReject", exception.Message.ToString());
+                Logger.LogWriter.Log.Logging(new Exception("Error occured in NewDoctorRequestService.asmx/ApproveOrReject : " + exception.Message));
                 retrunstr = exception.Message;
                 //if (insertTransaction != null) insertTransaction.Rollback();
             }
             return retrunstr;
+        }
+
+
+        private static void ErrorLog(string error)
+        {
+            try
+            {
+                //if (!Directory.Exists(ConfigurationManager.AppSettings["Logs"].ToString()))
+                //{
+                //    Directory.CreateDirectory(ConfigurationManager.AppSettings["Logs"].ToString());
+                //}
+
+                //File.AppendAllText(ConfigurationManager.AppSettings[@"Logs\"].ToString() + "Log_MonthlyDoctorsProccessing" + DateTime.UtcNow.ToString("yyyy_MM_dd") + ".txt", DateTime.Now + " : " + error + Environment.NewLine);
+
+                if (!Directory.Exists(ConfigurationManager.AppSettings["ApproveLog"].ToString()))
+                {
+                    Directory.CreateDirectory(ConfigurationManager.AppSettings["ApproveLog"].ToString());
+                }
+
+                File.AppendAllText(ConfigurationManager.AppSettings[@"ApproveLog"].ToString() + "LogMonthlyDoctorsProccessing_" + DateTime.UtcNow.ToString("yyyy_MM_dd") + ".txt",
+                    DateTime.Now + " : " + error + Environment.NewLine);
+            }
+            catch (Exception exception)
+            {
+                DoctorsService logger = new DoctorsService();
+                logger.InsertLog("ErrorLog", exception.Message.ToString());
+                Console.Out.WriteLine(exception.Message);
+            }
         }
 
         [WebMethod(EnableSession = true)]
@@ -270,13 +283,24 @@ namespace PocketDCR2.Form
 
                                 foreach (String emailAddress in emailAddresses.Split(';'))
                                 {
+                                    string paramssting = string.Empty;
                                     try
                                     {
-                                        Email.SendMail("New Doctor Request For Mobile Sheet, Please Review", emailAddress, empId, "0", "0", "0", docid, "Processed", EmployeeName, SpoNamewithTerritory, BUH, ManagerName, msg);
+
+
+                                        paramssting = "SFE Approval Request, " + "email " + emailAddress + ", empid " + empId + ",0" + ",0" + ",0" + docid + ",Processed , employeename " + EmployeeName + " , SpoNamewithTerritory " + SpoNamewithTerritory + ",BUH " + BUH + " , ManagerName " + ManagerName + " , msg" + msg;
+                                        InsertLog("paramssting", paramssting);
+
+                                        ErrorLog("Code will enter in SendMail of NewDoctorRequestService/ApproveOrRejectAll Method");
+
+                                        Email.SendUserMail("New Doctor Request For Mobile Sheet, Please Review", emailAddress, empId, "0", "0", "0", docid, "Processed", EmployeeName, SpoNamewithTerritory, BUH, ManagerName, msg);
                                         PocketDCR2.Classes.Constants.ErrorLog("SUCCESS :: New Doctor Request For Mobile Proccessed And Email Send " + emailAddresses + ". Emailed Sheet Is:" + excelURL);
                                     }
                                     catch (Exception ex)
                                     {
+
+                                        ErrorLog("Code Failed in NewDoctorRequestService/ApproveOrRejectAll Method. (" +  ex.Message + " )" + paramssting);
+
                                         retrunstr = result.Tables[2].ToJsonString();
                                         //throw ex;
                                     }
@@ -357,6 +381,9 @@ namespace PocketDCR2.Form
 
             catch (Exception exception)
             {
+
+                ErrorLog("Code Failed in NewDoctorRequestService/ApproveOrRejectAll Method. (" + exception.Message + " )");
+                InsertLog("ApproveOrRejectAll", exception.Message.ToString());
                 Logger.LogWriter.Log.Logging(new Exception("Error occured in NewDoctorRequestService.asmx/ApproveOrRejectAll : " + exception.Message));
                 retrunstr = exception.Message;
                 //if (insertTransaction != null) insertTransaction.Rollback();

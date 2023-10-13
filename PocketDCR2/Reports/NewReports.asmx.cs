@@ -10036,6 +10036,33 @@ namespace PocketDCR2.Reports
             return "MioCallReason";
         }
 
+        private static void ErrorLog(string error)
+        {
+            try
+            {
+                //if (!Directory.Exists(ConfigurationManager.AppSettings["Logs"].ToString()))
+                //{
+                //    Directory.CreateDirectory(ConfigurationManager.AppSettings["Logs"].ToString());
+                //}
+
+                //File.AppendAllText(ConfigurationManager.AppSettings[@"Logs\"].ToString() + "Log_MonthlyDoctorsProccessing" + DateTime.UtcNow.ToString("yyyy_MM_dd") + ".txt", DateTime.Now + " : " + error + Environment.NewLine);
+
+                if (!Directory.Exists(ConfigurationManager.AppSettings["ApproveLog"].ToString()))
+                {
+                    Directory.CreateDirectory(ConfigurationManager.AppSettings["ApproveLog"].ToString());
+                }
+
+                File.AppendAllText(ConfigurationManager.AppSettings[@"ApproveLog"].ToString() + "LogWorkPlanBySPOInExcel_" + DateTime.UtcNow.ToString("yyyy_MM_dd") + ".txt",
+                    DateTime.Now + " : " + error + Environment.NewLine);
+            }
+            catch (Exception exception)
+            {
+               
+                Console.Out.WriteLine(exception.Message);
+            }
+        }
+
+
 
 
         [WebMethod(EnableSession = true)]
@@ -10043,8 +10070,14 @@ namespace PocketDCR2.Reports
         public string WorkPlanBySPOInExcel(string level1Id, string level2Id, string level3Id, string level4Id, string level5Id, string level6Id,
             string skuid, string empid, string drid, string clid, string vsid, string jv, string dt1, string dt2, string empstatus, string EmpType)
         {
+
+            
+
             try
             {
+                ErrorLog("Code Reached to WorkPlanBySPOInExcel" );
+
+
                 DataTable dt = null;
 
                 #region CreatingWorksheet
@@ -10090,8 +10123,11 @@ namespace PocketDCR2.Reports
 
                 #region Data
 
+                ErrorLog("sp sp_WorkPlanBYSPO_Excel will run now");
+
+
                 string _currentUserRole = Convert.ToString(Session["CurrentUserRole"]);
-                _currentUser = (SystemUser)Session["SystemUser"];
+                _currentUser = (SystemUser)Session["SystemUser"];         
                 _nvCollection.Clear();
                 //_nvCollection.Add("@CurrentUserEmployeeId-INT", (_currentUser.EmployeeId).ToString());
                 //_nvCollection.Add("@CurrentUserRole-NVARCHAR", _currentUserRole);
@@ -10111,6 +10147,7 @@ namespace PocketDCR2.Reports
                 //DataTable table1 = ds.Tables[1];
                 #endregion
 
+                ErrorLog("Sp ran successfully " + table.Rows[0][0].ToString() + " <----- shows sp ran successfully");
                 #region formating
 
                 ws.Row(1).Height = 25.50;
@@ -10508,6 +10545,9 @@ namespace PocketDCR2.Reports
                 var filenamef = fileInfo.FullName.ToString();
                 Session["WorkPlanBySPOInExcel"] = "Work-Plan-By-SPO-Report-Excel-" + Convert.ToDateTime(dt1).ToString("MMM") + ".xlsx";
 
+
+                ErrorLog(filenamef + " <-- This is the path for the file");
+
                 #endregion
 
                 #endregion Formatting
@@ -10516,6 +10556,8 @@ namespace PocketDCR2.Reports
             catch (Exception ex)
             {
                 Constants.ErrorLog("Exception Raising From Work Plan By SPO In Excel Generation | " + ex.Message + " | Stack Trace | " + ex.StackTrace + ";");
+                ErrorLog("Exception Raising From Work Plan By SPO In Excel Generation | " + ex.Message + " | Stack Trace | " + ex.StackTrace + ";");
+
             }
             return "WorkPlanBySPOInExcel";
 

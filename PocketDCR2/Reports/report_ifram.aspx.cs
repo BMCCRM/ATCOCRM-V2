@@ -1704,7 +1704,7 @@ namespace PocketDCR2.Reports
                 case 91:
                     try
                     {
-                        if (Session["WorkPlanBySPOInExcel"] != null && Session["WorkPlanBySPOInExcel"] != "")
+                        if (Session["WorkPlanBySPOInExcel"] != null && Session["WorkPlanBySPOInExcel"].ToString() != "")
                         {
 
                             HyperLink1.Visible = true;
@@ -1721,7 +1721,7 @@ namespace PocketDCR2.Reports
                 case 92:
                     try
                     {
-                        if (Session["WorkPlanByDSMInExcel"] != null && Session["WorkPlanByDSMInExcel"] != "")
+                        if (Session["WorkPlanByDSMInExcel"] != null && Session["WorkPlanByDSMInExcel"].ToString() != "")
                         {
 
                             HyperLink1.Visible = true;
@@ -1738,7 +1738,7 @@ namespace PocketDCR2.Reports
                 case 93:
                     try
                     {
-                        if (Session["WorkPlanBySMInExcel"] != null && Session["WorkPlanBySMInExcel"] != "")
+                        if (Session["WorkPlanBySMInExcel"] != null && Session["WorkPlanBySMInExcel"].ToString() != "")
                         {
 
                             HyperLink1.Visible = true;

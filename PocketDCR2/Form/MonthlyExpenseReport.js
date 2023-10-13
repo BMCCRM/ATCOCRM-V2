@@ -490,7 +490,7 @@ function ajaxCompleted() {
 function LoadData(flag, startDate, endDate) {
     //l13 = $('#stdate').val();
     //l14 = $('#enddate').val();
-    debugger
+  
     startDate = $('#stdate').val();
     endDate = $('#enddate').val();
 

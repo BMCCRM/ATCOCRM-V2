@@ -3157,6 +3157,7 @@ function DCR() {
     }
 }
 function onSuccessDCR(data, status) {
+    debugger;
     var repottyp = $('#h1').val();
     url = "report_ifram.aspx?reporttype=" + repottyp;
     var iframe = $('#Reportifram');

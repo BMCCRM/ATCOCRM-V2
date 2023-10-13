@@ -2741,7 +2741,7 @@ var OnsuccessFillEmpDetails = function (response) {
             //}
             // if bigcity isnt allow and aditional city allowacne then aditional city allowance plus daily allowance
             if (isBigCity == "1") {
-                dailyAllval = parseFloat(jsonObj[i].BikeExpense);
+                dailyAllval = parseFloat(jsonObj[i].BikeAllowance);
             }
 
             else {

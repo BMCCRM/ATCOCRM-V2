@@ -227,16 +227,15 @@
 
 <%--                                <option value='81'>No Contact Point Report</option>
                                 <option value='83'>Joint Visit Report</option>
-                                <option value='88'>Up country Vs Local Working</option>
+                                <option value='88'>Up country Vs Local Working</option>--%>
                                 <option value='91'>Work Plan By SPO in Excel</option>
                                 <option value='92'>Work Plan By DSM in Excel</option>
-                                <option value='93'>Work Plan By SM in Excel</option>--%>
+                                <option value='93'>Work Plan By SM in Excel</option>
                                 <%--<option value='94'>Distributor Profiling</option>--%>
-<<<<<<< HEAD
+
                                  <option value='95'>Leave Report For HR</option>
                                 <option value='96'>Meeting By Admin</option>
                                 <option value='97'>Incentive Report</option>
-=======
 <%--                                 <option value='95'>Leave Report For HR</option>
                                 <option value='96'>Meeting By Admin</option>--%>
                                 

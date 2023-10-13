@@ -885,6 +885,7 @@ var OnSuccessFillGrid = function (response) {
         //$('#txtnightstay' + (i + 1)).text(((jsonObj[i].NightStay == "") ? "0" : jsonObj[i].NightStay));
         //$('#txtoutback' + (i + 1)).text(((jsonObj[i].OutBack == "") ? "0" : jsonObj[i].OutBack));
         $('#txtda' + (i + 1)).text(((jsonObj[i].DailyAllowance == "") ? "" : (parseInt(jsonObj[i].DailyAllowance) + ((jsonObj[i].ID1 == "") || (jsonObj[i].ID == null) ? 0 : dailyAllval))));
+
         $('#txtreim' + (i + 1)).text(jsonObj[i].ReimAmount); //Reim Amount in column
        //old
         //$('#txtda' + (i + 1)).text(((jsonObj[i].DailyAllowance == "") ? "" : (parseInt(jsonObj[i].DailyAllowance) + dailyAllval)));
@@ -1767,7 +1768,7 @@ var OnsuccessFillEmpDetails = function (response) {
 
             
             if (isBigCity == "1") {
-                dailyAllval = parseFloat(jsonObj[i].BikeExpense);//parseFloat(jsonObj[i].DailyAllowance)+parseFloat(jsonObj[i].BikeExpense);
+                dailyAllval = parseFloat(jsonObj[i].BikeAllowance);//parseFloat(jsonObj[i].DailyAllowance)+parseFloat(jsonObj[i].BikeExpense);
                     
             }
 
